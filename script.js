@@ -15,6 +15,29 @@ const NAV_LINKS = [
     ["/site%20data/about.html", "About Us"],
 ];
 
+function canonicalUrlForLocation(locationObject = window.location) {
+    const pathname = locationObject.pathname.replace(/\/index\.html$/i, "/");
+    return new URL(pathname, "https://trackboxoffice.com").href;
+}
+
+function ensureSeoMetadata() {
+    if (!document.head) return;
+
+    if (!document.querySelector('link[rel="canonical"]')) {
+        const canonical = document.createElement("link");
+        canonical.rel = "canonical";
+        canonical.href = canonicalUrlForLocation();
+        document.head.appendChild(canonical);
+    }
+
+    if (!document.querySelector('meta[name="robots"]')) {
+        const robots = document.createElement("meta");
+        robots.name = "robots";
+        robots.content = "index, follow, max-image-preview:large";
+        document.head.appendChild(robots);
+    }
+}
+
 function addStylesheet(href) {
     if (document.querySelector(`link[href="${href}"]`)) return;
     const link = document.createElement("link");
@@ -181,6 +204,7 @@ function img_disp() {
 }
 
 function initializeSite() {
+    ensureSeoMetadata();
     addStylesheet("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css");
     addWatermark();
     setupNavigation();
